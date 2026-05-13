@@ -11,6 +11,7 @@ import { UnknownRoute } from '@/routing/components/UnknownRoute';
 const IncrementButton = lazy(
   () => import('@/helloWorld/components/IncrementButton'),
 );
+const Notes = lazy(() => import('@/notes/Notes'));
 
 const router = createBrowserRouter([
   {
@@ -29,6 +30,10 @@ const router = createBrowserRouter([
       {
         path: 'locale',
         element: <ChangeLocaleButton />,
+      },
+      {
+        path: 'notes',
+        element: <LazyLoading Component={Notes} />,
       },
     ],
   },
