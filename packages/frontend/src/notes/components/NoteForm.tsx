@@ -1,10 +1,10 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { FormEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { css, Theme } from '@/common/styles/Styles';
-import { NotesClient } from '@/notes/api/NotesClient';
 import { Note } from '@/notes/api/types/Note';
+import { useCreateNote } from '@/notes/hooks/useCreateNote';
+import { useUpdateNote } from '@/notes/hooks/useUpdateNote';
 
 interface NoteFormProps {
   note?: Note;
@@ -13,31 +13,34 @@ interface NoteFormProps {
 
 export const NoteForm = ({ note, onDone }: NoteFormProps) => {
   const { t } = useTranslation();
-  const queryClient = useQueryClient();
   const [title, setTitle] = useState(note?.title ?? '');
   const [content, setContent] = useState(note?.content ?? '');
 
   const isEditing = note !== undefined;
 
-  const mutation = useMutation({
-    mutationFn: (payload: { title: string; content: string }) =>
-      isEditing
-        ? NotesClient.update(note.id, payload)
-        : NotesClient.create(payload),
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['notes'] });
-      if (!isEditing) {
-        setTitle('');
-        setContent('');
-      }
+  const { createNote, isPending: isCreating } = useCreateNote({
+    onSuccess: () => {
+      setTitle('');
+      setContent('');
       onDone?.();
     },
   });
 
+  const { updateNote, isPending: isUpdating } = useUpdateNote({
+    onSuccess: () => onDone?.(),
+  });
+
+  const isPending = isCreating || isUpdating;
+
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!title.trim() || !content.trim()) return;
-    mutation.mutate({ title: title.trim(), content: content.trim() });
+    const payload = { title: title.trim(), content: content.trim() };
+    if (isEditing) {
+      updateNote({ id: note.id, payload });
+    } else {
+      createNote(payload);
+    }
   };
 
   return (
@@ -57,7 +60,7 @@ export const NoteForm = ({ note, onDone }: NoteFormProps) => {
         aria-label={t('notesContentPlaceholder')}
       />
       <div className={actions}>
-        <button type="submit" disabled={mutation.isPending}>
+        <button type="submit" disabled={isPending}>
           {isEditing ? t('notesActionSave') : t('notesActionCreate')}
         </button>
         {isEditing && (

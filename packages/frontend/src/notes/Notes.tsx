@@ -1,17 +1,13 @@
-import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
 import { css, Theme } from '@/common/styles/Styles';
-import { NotesClient } from '@/notes/api/NotesClient';
 import { NoteForm } from '@/notes/components/NoteForm';
 import { NotesList } from '@/notes/components/NotesList';
+import { useNotes } from '@/notes/hooks/useNotes';
 
 const Notes = () => {
   const { t } = useTranslation();
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ['notes'],
-    queryFn: NotesClient.list,
-  });
+  const { notes, isLoading, isError } = useNotes();
 
   return (
     <div className={container}>
@@ -19,7 +15,7 @@ const Notes = () => {
       <NoteForm />
       {isLoading && <span>{t('notesLoading')}</span>}
       {isError && <span>{t('notesFailedToLoad')}</span>}
-      {data && <NotesList notes={data} />}
+      {notes && <NotesList notes={notes} />}
     </div>
   );
 };
