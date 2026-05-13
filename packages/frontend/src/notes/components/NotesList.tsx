@@ -1,11 +1,10 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { css, Theme } from '@/common/styles/Styles';
-import { NotesClient } from '@/notes/api/NotesClient';
 import { Note } from '@/notes/api/types/Note';
 import { NoteForm } from '@/notes/components/NoteForm';
+import { useDeleteNote } from '@/notes/hooks/useDeleteNote';
 
 interface NotesListProps {
   notes: Note[];
@@ -29,13 +28,8 @@ export const NotesList = ({ notes }: NotesListProps) => {
 
 const NoteItem = ({ note }: { note: Note }) => {
   const { t } = useTranslation();
-  const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
-
-  const deleteMutation = useMutation({
-    mutationFn: () => NotesClient.remove(note.id),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['notes'] }),
-  });
+  const { deleteNote, isPending } = useDeleteNote();
 
   if (isEditing) {
     return (
@@ -55,8 +49,8 @@ const NoteItem = ({ note }: { note: Note }) => {
         </button>
         <button
           type="button"
-          onClick={() => deleteMutation.mutate()}
-          disabled={deleteMutation.isPending}
+          onClick={() => deleteNote(note.id)}
+          disabled={isPending}
         >
           {t('notesActionDelete')}
         </button>
