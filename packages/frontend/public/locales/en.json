@@ -1,5 +1,16 @@
 {
   "loading": "Loading...",
   "testLanguage": "Test Language",
-  "failToLoadHelloWorld": "Fail to load Hello World"
+  "failToLoadHelloWorld": "Fail to load Hello World",
+  "notesTitle": "Notes",
+  "notesEmpty": "No notes yet.",
+  "notesLoading": "Loading notes...",
+  "notesFailedToLoad": "Failed to load notes",
+  "notesTitlePlaceholder": "Title",
+  "notesContentPlaceholder": "Content",
+  "notesActionCreate": "Create",
+  "notesActionSave": "Save",
+  "notesActionCancel": "Cancel",
+  "notesActionEdit": "Edit",
+  "notesActionDelete": "Delete"
 }

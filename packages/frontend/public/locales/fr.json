@@ -1,5 +1,16 @@
 {
   "loading": "Chargement...",
   "testLanguage": "Test de langue",
-  "failToLoadHelloWorld": "Échec de chargement du Hello World"
+  "failToLoadHelloWorld": "Échec de chargement du Hello World",
+  "notesTitle": "Notes",
+  "notesEmpty": "Aucune note.",
+  "notesLoading": "Chargement des notes...",
+  "notesFailedToLoad": "Échec du chargement des notes",
+  "notesTitlePlaceholder": "Titre",
+  "notesContentPlaceholder": "Contenu",
+  "notesActionCreate": "Créer",
+  "notesActionSave": "Enregistrer",
+  "notesActionCancel": "Annuler",
+  "notesActionEdit": "Modifier",
+  "notesActionDelete": "Supprimer"
 }

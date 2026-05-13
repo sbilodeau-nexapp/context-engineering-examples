@@ -5,6 +5,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { appConfiguration } from './app.config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { NoteModule } from './note/note.module';
 import { SentryInterceptor, SentryService } from './sentry.interceptor';
 
 @Module({
@@ -13,6 +14,7 @@ import { SentryInterceptor, SentryService } from './sentry.interceptor';
       load: [appConfiguration],
       isGlobal: true,
     }),
+    NoteModule,
   ],
   controllers: [AppController],
   providers: [

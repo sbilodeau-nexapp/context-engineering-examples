@@ -13,6 +13,7 @@ export const Layout = () => {
         <div className={links}>
           <Link to={'/count'}>Count</Link>
           <Link to={'/locale'}>Translation</Link>
+          <Link to={'/notes'}>Notes</Link>
           <Link to={'/'}>Hello World</Link>
         </div>
 

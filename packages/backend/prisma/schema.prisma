@@ -17,3 +17,11 @@ model simple_example {
   comment   String?  @db.Text
   is_a_bool Boolean
 }
+
+model note {
+  id         String   @id @unique @db.Uuid
+  title      String   @db.VarChar(255)
+  content    String   @db.Text
+  created_at DateTime @default(now()) @db.Timestamp()
+  updated_at DateTime @updatedAt @db.Timestamp()
+}
