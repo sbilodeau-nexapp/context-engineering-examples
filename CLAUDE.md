@@ -1,115 +1,50 @@
-# CLAUDE.md
+## Repository layout
 
-When the user requests code examples, setup or configuration steps, or library/API documentation, use context7
+Monorepo with three independent yarn packages under `packages/` — there is no root workspace, each package is installed and built on its own:
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+- `packages/backend` — NestJS 10 + Prisma 5 + PostgreSQL API
+- `packages/frontend` — React 19 + Vite 6 + TanStack Query + react-router 7 SPA
+- `packages/infra` — Pulumi (AWS) infrastructure-as-code, plus mjml email templates
 
-## Project Structure
+## Common commands
+### Backend (`packages/backend`)
 
-This is a monorepo containing three packages:
-- **backend**: NestJS API with Prisma ORM and PostgreSQL
-- **frontend**: React with Vite, TypeScript, i18next, and Emotion CSS-in-JS  
-- **infra**: Pulumi infrastructure as code for AWS deployment
-
-## Development Commands
-
-### Backend (`packages/backend/`)
 ```bash
-# Install dependencies and start database
 yarn install
-docker-compose up -d
-
-# Development
-yarn start:dev          # Start with hot reload
-yarn start              # Start normally
-yarn start:prod         # Production mode
-
-# Database
-yarn migrate:dev         # Run migrations in development
-yarn migrate:prod        # Deploy migrations in production
-yarn prisma:generate     # Generate Prisma client
-
-# Testing & Quality
-yarn test               # Unit tests
-yarn test:e2e           # End-to-end tests
-yarn lint               # ESLint with auto-fix
-yarn format             # Prettier formatting
+docker-compose up -d                  # local Postgres on :5432 (db "Base-template")
+yarn migrate:dev                      # apply Prisma migrations against .env.development
+yarn prisma:generate                  # regenerate Prisma client after schema changes
+yarn start:dev                        # nest watch mode with .env.development
+yarn test                             # jest unit tests (uses testcontainers — Docker must be running)
+yarn lint                             # eslint --fix
+yarn build                            # nest build → dist/
 ```
 
-### Frontend (`packages/frontend/`)
+### Frontend (`packages/frontend`)
+
 ```bash
-# Development
-yarn dev                # Start Vite dev server
-yarn build              # Build for development
-yarn build:production   # Production build
-yarn preview            # Preview production build
-
-# Testing & Quality
-yarn test               # Vitest tests
-yarn lint               # ESLint
-yarn format             # Check Prettier formatting
-yarn format:fix         # Fix Prettier formatting
-yarn tsc                # TypeScript check
+yarn install
+yarn dev                              # vite dev server
+yarn test                             # vitest watch
+yarn tsc                              # type-check only
+yarn lint                             # eslint, --max-warnings 0
+yarn build                            # tsc && vite build
 ```
 
-### Infrastructure (`packages/infra/`)
-```bash
-# Pulumi deployment
-pulumi up               # Deploy infrastructure
-pulumi stack init [stack]  # Create new stack
-```
+### Infra (`packages/infra`)
 
-## Architecture
+Pulumi-managed. See `packages/infra/README.md` for the full AWS/Pulumi bootstrap (S3 state bucket, KMS secrets provider, stack init). Local scripts: `yarn tsc`, `yarn lint`, `yarn code-standard`, `yarn generate-emails` (compiles mjml templates in `emails/`).
 
-### Backend Architecture
-- **Domain-Driven Design**: Each feature has `domain/`, `repository/` folders
-- **NestJS modules**: Controllers, services, and dependency injection
-- **Prisma ORM**: Type-safe database access with PostgreSQL
-- **Repository pattern**: Interface in domain, implementation in repository
-- **Test containers**: PostgreSQL test containers for e2e tests
-- **Sentry monitoring**: Global error interceptor
+## Backend architecture
 
-Example domain structure (see `src/simpleExample/`):
-- `domain/SimpleExample.ts` - Domain entity
-- `domain/example.repository.ts` - Repository interface  
-- `repository/example.prisma.repository.ts` - Prisma implementation
+The backend follows nest module architecture. `note/` is the canonical example to copy when adding a new resource.
+Modules are built in layers. Prisma repositories interacts with the DB. Services reuse the prisma layer and might implement domain related logic if needed and Controller endpoints expose Services functionalities.
 
-### Frontend Architecture
-- **React Router**: File-based routing configuration in `src/routing/Router.tsx`
-- **TanStack Query**: Data fetching and caching
-- **Emotion CSS-in-JS**: Styling with theme support via CSS variables
-- **i18next**: Internationalization with lazy-loaded locale files
-- **Feature-based structure**: Each feature has `components/`, `api/`, `domain/` folders
-- **Global error boundaries**: Catch and handle React errors
-- **Lazy loading**: Code splitting for better performance
+## Frontend architecture
 
-Example feature structure (see `src/helloWorld/`):
-- `components/` - React components
-- `api/` - API clients and types
-- `domain/` - Business logic
+Feature-folder layout under `src/`. `notes/` is the best example.
+The frontend flow to the backend is  : component  →  hooks/use<Action><Feature>.ts  →  api/<Feature>Client.ts
 
-### Testing Strategy
-- **Backend**: Jest with test containers for database integration
-- **Frontend**: Vitest + Testing Library for components, Nock for API mocking
-- **Global setup**: Database seeding and teardown in test environment
+Styling uses Emotion's `css` (classname API only — no styled components) wrapped by `@/common/styles/Styles.ts`
 
-## Configuration
-
-### Environment Variables
-- Backend requires `DATABASE_URL` for Prisma
-- Frontend requires `VITE_API_URL` for backend communication
-- Both packages support Sentry monitoring via respective DSN variables
-
-### Key Configuration Files
-- `packages/backend/prisma/schema.prisma` - Database schema
-- `packages/frontend/vite.config.ts` - Vite configuration
-- `packages/infra/Pulumi.yaml` - Infrastructure configuration
-
-## Deployment
-
-The project includes GitLab CI/CD setup with:
-- Backend: ECS deployment with ECR Docker registry
-- Frontend: S3 + CloudFront deployment
-- Infrastructure: Pulumi-managed AWS resources
-
-Required AWS IAM permissions are documented in the main README.md.
+i18n is used for translations
