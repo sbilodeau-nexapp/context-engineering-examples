@@ -12,13 +12,21 @@ Frontend API Client
 Backend Controller
 ```
 
-### Folders
-- Components go into their own folder inside `/packages/frontend/src`
-- There should always be these minimum state folders : 
-- - `__tests__` For tests
-- - `api` For the related HTTP Client that knows the backend endpoints
-- - `components` For the React Components
-- - `hooks` For the Custom TanStack Query hooks who uses the HTTP Client
+## Folder Structure
+
+Create the feature under `packages/frontend/src/<feature>/` with at minimum:
+
+```
+src/<feature>/
+├── __tests__/           # Integration tests (user-facing behavior)
+├── api/
+│   ├── <Feature>Client.ts
+│   ├── types/           # Domain types and payloads
+│   └── __tests__/       # Client unit tests
+├── components/          # React components
+├── hooks/               # TanStack Query hooks (one file per query/mutation)
+└── <Feature>.tsx        # Feature root component
+```
 
 ### Styles
 - Styles should always use `css` or `Theme` from `'@/common/styles/Styles';` 
