@@ -1,0 +1,2 @@
+## Infra 
+Pulumi-managed. See `./README.md` for the full AWS/Pulumi bootstrap (S3 state bucket, KMS secrets provider, stack init). Local scripts: `yarn tsc`, `yarn lint`, `yarn code-standard`, `yarn generate-emails` (compiles mjml templates in `emails/`).
