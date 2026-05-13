@@ -1,0 +1,50 @@
+<mjml>
+  <mj-body>
+    <mj-section>
+      <mj-column width="30%">
+        <mj-image src="https://www.nexapp.ca/hubfs/Logo.svg" align="left" />
+      </mj-column>
+    </mj-section>
+
+    <mj-section>
+      <mj-column>
+        <mj-text font-size="15px" line-height="1.5">
+          <p>Hello,</p>
+
+          <p>Welcome! We are delighted to have you as a user.</p>
+
+          <p>Here is your login information to access your account:</p>
+
+          <ul>
+            <li>Username: {username}</li>
+
+            <li>Temporary password is: {####}</li>
+          </ul>
+        </mj-text>
+
+        <!--        <mj-button-->
+        <!--                href="https://<your-login-url>"-->
+        <!--                background-color="#4A5C92"-->
+        <!--                color="#ffffff"-->
+        <!--                font-size="16px"-->
+        <!--                padding="10px 25px"-->
+        <!--                border-radius="25px"-->
+        <!--                align="left"-->
+        <!--        >-->
+        <!--          Login-->
+        <!--        </mj-button>-->
+
+        <mj-text font-size="15px" line-height="1.5">
+          <p>
+            <strong>Important:</strong> For your security, you will be prompted
+            to create a new personal password upon your first login.
+            <strong
+              >Please note that your temporary password is valid for 1
+              hour.</strong
+            >
+          </p>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

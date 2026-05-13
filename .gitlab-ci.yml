@@ -1,0 +1,66 @@
+default:
+  image: node:20
+  tags:
+    - docker
+    - nexapp
+
+variables:
+  RULES_CHANGES_PATH: "**/*"
+
+.base-rules:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+      when: never
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes:
+        - $RULES_CHANGES_PATH
+    - when: manual
+      allow_failure: true
+
+.backend-cache:
+  cache:
+    - key:
+        files:
+          - packages/backend/yarn.lock
+          - packages/backend/prisma/schema.prisma
+      paths:
+        - packages/backend/node_modules/
+
+.backend:
+  extends:
+    - .base-rules
+    - .backend-cache
+  before_script:
+    - cd packages/backend
+  variables:
+    RULES_CHANGES_PATH: "packages/backend/**/*"
+
+.frontend-cache:
+  cache:
+    - key:
+        files:
+          - packages/frontend/yarn.lock
+      paths:
+        - packages/frontend/node_modules/
+
+.frontend:
+  extends:
+    - .base-rules
+    - .frontend-cache
+  before_script:
+    - cd packages/frontend
+  variables:
+    RULES_CHANGES_PATH: "packages/frontend/**/*"
+
+stages:
+  - setup
+  - lint
+  - test
+  - build
+  - deploy
+
+include:
+  - "/packages/frontend/.gitlab-ci.yml"
+  - "/packages/backend/.gitlab-ci.yml"

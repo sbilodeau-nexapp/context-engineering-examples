@@ -1,0 +1,11 @@
+name: base-template
+runtime: nodejs
+description: A minimal AWS TypeScript Pulumi program
+config:
+  aws:region: ca-central-1
+  organization: organization
+  dockerRegistryProjectName: docker
+  dockerRegistryStackName: dev
+  gitlabProjectId: 412 #TODO remove once testing is over
+options:
+  refresh: always

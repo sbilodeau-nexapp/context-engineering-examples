@@ -1,0 +1,34 @@
+:root {
+  --baseWhite: white;
+
+  --black50: rgb(235, 235, 235);
+  --black100: grey;
+  --black200: #3c4142;
+  --black300: #242424;
+  --black700: black;
+
+  --blue100: lightblue;
+  --success100: #d1fadf;
+  --success300: #6ce9a6;
+  --success500: #12b76a;
+}
+
+body {
+  --primaryText: var(--black700);
+  --secondaryText: var(--black100);
+  --contrastText: var(--baseWhite);
+  --primaryBackground: var(--baseWhite);
+  --secondaryBackground: var(--black100);
+  --tertiaryBackground: var(--black50);
+
+  color: var(--primaryText);
+}
+
+body.dark {
+  --primaryText: var(--baseWhite);
+  --secondaryText: var(--blue100);
+  --contrastText: var(--black700);
+  --primaryBackground: var(--black300);
+  --secondaryBackground: var(--baseWhite);
+  --tertiaryBackground: var(--black200);
+}

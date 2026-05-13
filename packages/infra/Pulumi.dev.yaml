@@ -1,0 +1,27 @@
+secretsprovider: awskms://5bb559eb-81fd-4a96-980f-a54e03297d06?region=ca-central-1
+encryptedkey: AQICAHg3vRM1b8in+4eJotXyiijMPNS8p42wI9wzxC7mwW7mwAEqUgQojsC/TMkcMp9htXisAAAAfjB8BgkqhkiG9w0BBwagbzBtAgEAMGgGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMCdT+symMiB1SW4DnAgEQgDuwC9j6fBWO0lezMmkwSRZvLVsV3u1COiMVBEvXwbTQmC5N5uH4uMj5SJEYkyBvHbO/wUot1stwOKYRHw==
+config:
+  alerting:authTokenSecretArn: ''
+  alerting:apiDsnSecretArn: ''
+  api:cpu: 1024
+  api:instanceCount: 1
+  api:memory: 1024
+  api:targetPort: 3000
+  api:healthCheckEndpoint: '/health'
+  api:targetImageTag: 'latest'
+  user-pool:invitationEmailSubject: 'Welcome to Base template | Your Temporary Access'
+  user-pool:invitationEmailTemplateName: 'invitation.dev'
+  user-pool:resetPasswordEmailTemplateName: 'resetPassword.dev'
+  bastion:allowedIpCidr: '184.149.56.114/32'
+  bastion:keyPair: my-val
+  base-template:certificateArn: ''
+  base-template:cloudFrontAlias: ''
+  base-template:cloudFrontCertificateArn: ''
+  database:name: basetemplate
+  database:instanceClass: 'db.t3.micro'
+  database:allocatedStorage: 10
+  aws:defaultTags:
+    tags:
+      Project: base-template
+      Environment: dev
+      ManagedBy: pulumi

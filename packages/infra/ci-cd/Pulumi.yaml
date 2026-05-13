@@ -1,0 +1,11 @@
+name: ci-cd
+description: Resource required for infra deployment
+runtime:
+  name: nodejs
+  options:
+    packagemanager: yarn
+config:
+  gitlabProjectId: 412 #TODO adjust according to your gitlab project id
+  pulumi:tags:
+    value:
+      pulumi:template: aws-typescript

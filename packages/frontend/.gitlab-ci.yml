@@ -1,0 +1,79 @@
+frontend-setup:
+  extends: .frontend
+  stage: setup
+  interruptible: true
+  script:
+    - yarn install --frozen-lockfile
+
+frontend-lint:
+  extends: .frontend
+  stage: lint
+  interruptible: true
+  needs:
+    - frontend-setup
+  script:
+    - yarn lint
+    - yarn format
+
+frontend-typecheck:
+  extends: .frontend
+  stage: lint
+  interruptible: true
+  needs:
+    - frontend-setup
+  script:
+    - yarn tsc
+
+frontend-test:
+  extends: .frontend
+  stage: test
+  interruptible: true
+  needs:
+    - frontend-setup
+  script:
+    - yarn test
+
+.build-frontend:
+  extends: .frontend-cache
+  stage: build
+  artifacts:
+    paths:
+      - packages/frontend/dist/**
+    expire_in: 1 week
+  interruptible: true
+  before_script:
+    - cd packages/frontend
+  script:
+    - yarn
+    - yarn build:$ENV
+
+frontend-build-prod:
+  extends: .build-frontend
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  variables:
+    ENV: production
+
+.deploy-frontend:
+  extends: .frontend-cache
+  image: registry.gitlab.com/gitlab-org/cloud-deploy/aws-base:latest
+  stage: deploy
+  interruptible: false
+  before_script:
+    - cd packages/frontend
+  script:
+    - scripts/s3-deploy.sh
+  environment:
+    name: $ENV/frontend
+    url: $URL
+
+frontend-deploy-prod:
+  extends: .deploy-frontend
+  needs:
+    - frontend-build-prod
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  variables:
+    CLOUDFRONT_DISTRIBUTION: E31B9YVY88T95U
+    WEBAPP_S3_BUCKET: base-template-webapp-dev
+    ENV: production

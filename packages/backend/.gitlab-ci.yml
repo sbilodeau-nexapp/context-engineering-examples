@@ -1,0 +1,100 @@
+backend-setup:
+  extends: .backend
+  stage: setup
+  interruptible: true
+  script:
+    - yarn
+
+backend-lint:
+  extends: .backend
+  stage: lint
+  interruptible: true
+  needs:
+    - backend-setup
+  script:
+    - yarn lint
+
+backend-typecheck:
+  extends: .backend
+  stage: lint
+  interruptible: true
+  needs:
+    - backend-setup
+  script:
+    - yarn tsc
+
+backend-test:
+  extends: .backend
+  stage: test
+  interruptible: true
+  variables:
+    DOCKER_HOST: 'tcp://docker:2375'
+    # Instruct Docker not to start over TLS.
+    DOCKER_TLS_CERTDIR: ''
+    # Improve performance with overlayfs.
+    DOCKER_DRIVER: overlay2
+  services:
+    - name: docker:dind
+      # explicitly disable tls to avoid docker startup interruption
+      command: ['--tls=false']
+  needs:
+    - backend-setup
+  script:
+    - yarn test
+
+.build-backend:
+  extends: .backend-cache
+  image: registry.gitlab.com/gitlab-org/cloud-deploy/aws-base:latest
+  stage: build
+  interruptible: true
+  services:
+    - name: docker:dind
+      # explicitly disable tls to avoid docker startup interruption
+      command: ['--tls=false']
+  variables:
+    ECR_URL: 125041880134.dkr.ecr.ca-central-1.amazonaws.com
+    IMAGE_REGISTRY: 125041880134.dkr.ecr.ca-central-1.amazonaws.com/base-template-backend-images
+    IMAGE_TAG: $CI_COMMIT_SHA
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ''
+  before_script:
+    - cd packages/backend
+  script:
+    - scripts/ecr-build.sh
+
+backend-build-prod:
+  extends: .build-backend
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  variables:
+    ENV: production
+
+.deploy-backend:
+  extends: .backend-cache
+  image: registry.gitlab.com/gitlab-org/cloud-deploy/aws-base:latest
+  stage: deploy
+  interruptible: false
+  before_script:
+    - cd packages/backend
+  variables:
+    IMAGE_REGISTRY: 125041880134.dkr.ecr.ca-central-1.amazonaws.com/base-template-backend-images
+    IMAGE_TAG: $CI_COMMIT_SHA
+  script:
+    - scripts/ecs-deploy.sh
+  environment:
+    name: $ENV/backend
+    url: $URL
+
+backend-deploy-prod:
+  extends: .deploy-backend
+  needs:
+    - backend-build-prod
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  variables:
+    ECS_TASK_DEFINITION_NAME: base-template-ecs-dev-111a009c
+    ECS_CLUSTER_NAME: base-template-cluster-dev-31dedc9
+    ECS_SERVICE_NAME: base-template-ecs-dev-bc9f8ce
+    ECS_CONTAINER_NAME: backend
+    ENV: production

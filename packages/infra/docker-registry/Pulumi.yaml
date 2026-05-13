@@ -1,0 +1,7 @@
+name: docker
+runtime: nodejs
+description: AWS infrastructure for Base template docker image.
+config:
+  aws:region: ca-central-1
+options:
+  refresh: always

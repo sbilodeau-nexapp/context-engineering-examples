@@ -1,0 +1,12 @@
+{
+  "name": "init",
+  "main": "index.ts",
+  "devDependencies": {
+    "@types/node": "24.3.1"
+  },
+  "dependencies": {
+    "@pulumi/aws": "7.7.0",
+    "@pulumi/pulumi": "3.194.0",
+    "@pulumi/docker": "4.5.0"
+  }
+}
